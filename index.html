@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html style="margin-top: -5px; overflow: hidden;">
+<head>
+  <title>Elite Dangerous S&R Mission Helper</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="./css/materialize.min.css">
+  <link href="./css/icon.css" rel="stylesheet">
+  <style>
+  html,img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    cursor: default;
+}
+
+  </style>
+</head>
+<body>
+    <nav style="-webkit-app-region: drag">
+      <div class="nav-wrapper black orange-text">
+        <i class="material-icons brand-logo right" id="min" style="margin-right: 50px;-webkit-app-region: no-drag; cursor: pointer">remove</i>
+        <i class="material-icons brand-logo right" id="close" style="margin-right: 10px;-webkit-app-region: no-drag; cursor: pointer">close</i>
+        <span style="padding-left: 20px;font-size: 200%;">ED Mission Helper</span>
+      </div>
+    </nav>
+    <div id="wing" class="black center-align">
+      <img src="./app/icon_1_off.svg" id="wingyou" height="45px">
+      <img src="./app/icon_2_off.svg" id="wing1" height="45px" style="margin-left: 10px; display: none;">
+      <img src="./app/icon_3_off.svg" id="wing2" height="45px" style="margin-left: 10px; display: none;">
+      <img src="./app/icon_4_off.svg" id="wing3" height="45px" style="margin-left: 10px; display: none;">
+    </div>
+  <div id="list">
+    <div class="card orange darken-1 center-align">
+      <div class="card-content black-text">
+        <span class="card-title"><b>No data to display</b></span>
+      </div>
+    </div>
+  </div>
+  <script src="./js/materialize.min.js"></script>
+  <script src="./app/MenuHandler.js"></script>
+</body>
+</html>
