@@ -126,7 +126,7 @@ function parser(data,inl=0) {
     }else if (data.event == "WingJoin"){
         wing[1] = data.Others;
     }else if (data.event == "WingAdd"){
-        wing[1].push(data.Name);
+        if(wing[1].indexOf(data.Name)==-1) wing[1].push(data.Name);
         if(inl>0){
             checkWing(wing[1])
         };
