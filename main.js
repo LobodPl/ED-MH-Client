@@ -9,140 +9,57 @@ const os = require('os');
 var ipc = require('electron').ipcMain;
 var fn = "";
 var mdata = {};
-var cache = 0;
 var fcache = 0;
 var FilePath = 'C:\\Users\\' + os.userInfo().username + '\\Saved Games\\Frontier Developments\\Elite Dangerous';
 var lastlocal = ["-", "Deep Space"];
-var reqloc = [];
 var common = [{
-    "id": "61",
-    "name": "Advanced Catalysers"
-}, {
-    "id": "166",
-    "name": "Advanced Medicines"
-}, {
     "id": "1",
     "name": "Agri-Medicines"
 }, {
-    "id": "15",
-    "name": "Algae"
+    "id": "3",
+    "name": "Explosives"
 }, {
-    "id": "37",
-    "name": "Aluminium"
+    "id": "4",
+    "name": "Hydrogen Fuel"
 }, {
-    "id": "16",
-    "name": "Animal Meat"
+    "id": "5",
+    "name": "Mineral Oil"
 }, {
-    "id": "62",
-    "name": "Animal Monitors"
-}, {
-    "id": "63",
-    "name": "Aquaponic Systems"
-}, {
-    "id": "182",
-    "name": "Articulation Motors"
-}, {
-    "id": "87",
-    "name": "Atmospheric Processors"
-}, {
-    "id": "65",
-    "name": "Auto-Fabricators"
-}, {
-    "id": "33",
-    "name": "Basic Medicines"
-}, {
-    "id": "88",
-    "name": "Battle Weapons"
-}, {
-    "id": "51",
-    "name": "Bauxite"
-}, {
-    "id": "10",
-    "name": "Beer"
-}, {
-    "id": "52",
-    "name": "Bertrandite"
-}, {
-    "id": "38",
-    "name": "Beryllium"
-}, {
-    "id": "66",
-    "name": "Bioreducing Lichen"
-}, {
-    "id": "76",
-    "name": "Biowaste"
-}, {
-    "id": "106",
-    "name": "Bismuth"
-}, {
-    "id": "95",
-    "name": "Bootleg Liquor"
-}, {
-    "id": "148",
-    "name": "Bromellite"
-}, {
-    "id": "102",
-    "name": "Building Fabricators"
-}, {
-    "id": "100",
-    "name": "Ceramic Composites"
-}, {
-    "id": "32",
-    "name": "Chemical Waste"
+    "id": "6",
+    "name": "Pesticides"
 }, {
     "id": "7",
     "name": "Clothing"
 }, {
-    "id": "140",
-    "name": "CMM Composite"
-}, {
-    "id": "39",
-    "name": "Cobalt"
-}, {
-    "id": "17",
-    "name": "Coffee"
-}, {
-    "id": "55",
-    "name": "Coltan"
-}, {
-    "id": "34",
-    "name": "Combat Stabilisers"
-}, {
-    "id": "67",
-    "name": "Computer Components"
-}, {
-    "id": "165",
-    "name": "Conductive Fabrics"
-}, {
     "id": "8",
     "name": "Consumer Technology"
-}, {
-    "id": "40",
-    "name": "Copper"
-}, {
-    "id": "29",
-    "name": "Crop Harvesters"
-}, {
-    "id": "110",
-    "name": "Cryolite"
 }, {
     "id": "9",
     "name": "Domestic Appliances"
 }, {
-    "id": "158",
-    "name": "Emergency Power Cells"
+    "id": "10",
+    "name": "Beer"
 }, {
-    "id": "149",
-    "name": "Energy Grid Assembly"
+    "id": "11",
+    "name": "Liquor"
 }, {
-    "id": "99",
-    "name": "Evacuation Shelter"
+    "id": "12",
+    "name": "Narcotics"
 }, {
-    "id": "159",
-    "name": "Exhaust Manifold"
+    "id": "13",
+    "name": "Tobacco"
 }, {
-    "id": "3",
-    "name": "Explosives"
+    "id": "14",
+    "name": "Wine"
+}, {
+    "id": "15",
+    "name": "Algae"
+}, {
+    "id": "16",
+    "name": "Animal Meat"
+}, {
+    "id": "17",
+    "name": "Coffee"
 }, {
     "id": "18",
     "name": "Fish"
@@ -153,209 +70,137 @@ var common = [{
     "id": "20",
     "name": "Fruit and Vegetables"
 }, {
-    "id": "56",
-    "name": "Gallite"
-}, {
-    "id": "41",
-    "name": "Gallium"
-}, {
-    "id": "103",
-    "name": "Geological Equipment"
-}, {
-    "id": "42",
-    "name": "Gold"
-}, {
-    "id": "111",
-    "name": "Goslarite"
-}, {
     "id": "21",
     "name": "Grain"
 }, {
-    "id": "68",
-    "name": "H.E. Suits"
+    "id": "22",
+    "name": "Tea"
 }, {
-    "id": "124",
-    "name": "Hafnium 178"
-}, {
-    "id": "155",
-    "name": "Hardware Diagnostic Sensor"
-}, {
-    "id": "151",
-    "name": "Heatsink Interlink"
-}, {
-    "id": "150",
-    "name": "HN Shock Mount"
-}, {
-    "id": "4",
-    "name": "Hydrogen Fuel"
-}, {
-    "id": "138",
-    "name": "Hydrogen Peroxide"
-}, {
-    "id": "49",
-    "name": "Imperial Slaves"
-}, {
-    "id": "57",
-    "name": "Indite"
-}, {
-    "id": "43",
-    "name": "Indium"
-}, {
-    "id": "141",
-    "name": "Insulating Membrane"
-}, {
-    "id": "160",
-    "name": "Ion Distributor"
-}, {
-    "id": "168",
-    "name": "Jadeite"
-}, {
-    "id": "71",
-    "name": "Land Enrichment Systems"
-}, {
-    "id": "118",
-    "name": "Landmines"
-}, {
-    "id": "107",
-    "name": "Lanthanum"
-}, {
-    "id": "73",
-    "name": "Leather"
-}, {
-    "id": "58",
-    "name": "Lepidolite"
-}, {
-    "id": "137",
-    "name": "Liquid Oxygen"
-}, {
-    "id": "11",
-    "name": "Liquor"
-}, {
-    "id": "44",
-    "name": "Lithium"
-}, {
-    "id": "147",
-    "name": "Lithium Hydroxide"
-}, {
-    "id": "144",
-    "name": "Low Temperature Diamonds"
-}, {
-    "id": "152",
-    "name": "Magnetic Emitter Coil"
-}, {
-    "id": "86",
-    "name": "Marine Equipment"
-}, {
-    "id": "154",
-    "name": "Medical Diagnostic Equipment"
-}, {
-    "id": "101",
-    "name": "Meta-Alloys"
-}, {
-    "id": "145",
-    "name": "Methane Clathrate"
-}, {
-    "id": "146",
-    "name": "Methanol Monohydrate Crystals"
-}, {
-    "id": "156",
-    "name": "Micro Controllers"
-}, {
-    "id": "185",
-    "name": "Micro-Weave Cooling Hoses"
-}, {
-    "id": "85",
-    "name": "Microbial Furnaces"
-}, {
-    "id": "157",
-    "name": "Military Grade Fabrics"
-}, {
-    "id": "31",
-    "name": "Mineral Extractors"
-}, {
-    "id": "5",
-    "name": "Mineral Oil"
-}, {
-    "id": "181",
-    "name": "Modular Terminals"
-}, {
-    "id": "116",
-    "name": "Moissanite"
-}, {
-    "id": "119",
-    "name": "Muon Imager"
-}, {
-    "id": "167",
-    "name": "Nanobreakers"
-}, {
-    "id": "12",
-    "name": "Narcotics"
-}, {
-    "id": "74",
-    "name": "Natural Fabrics"
-}, {
-    "id": "183",
-    "name": "Neofabric Insulation"
-}, {
-    "id": "96",
-    "name": "Nerve Agents"
-}, {
-    "id": "78",
-    "name": "Non-Lethal Weapons"
-}, {
-    "id": "72",
-    "name": "Osmium"
-}, {
-    "id": "84",
-    "name": "Painite"
-}, {
-    "id": "45",
-    "name": "Palladium"
-}, {
-    "id": "35",
-    "name": "Performance Enhancers"
-}, {
-    "id": "79",
-    "name": "Personal Weapons"
-}, {
-    "id": "6",
-    "name": "Pesticides"
-}, {
-    "id": "81",
-    "name": "Platinum"
-}, {
-    "id": "10233",
-    "name": "Platinum Alloy"
+    "id": "23",
+    "name": "Synthetic Meat"
 }, {
     "id": "26",
     "name": "Polymers"
 }, {
-    "id": "153",
-    "name": "Power Converter"
+    "id": "27",
+    "name": "Superconductors"
 }, {
-    "id": "83",
-    "name": "Power Generators"
+    "id": "28",
+    "name": "Semiconductors"
 }, {
-    "id": "161",
-    "name": "Power Transfer Bus"
+    "id": "29",
+    "name": "Crop Harvesters"
 }, {
-    "id": "143",
-    "name": "Praseodymium"
+    "id": "31",
+    "name": "Mineral Extractors"
+}, {
+    "id": "32",
+    "name": "Chemical Waste"
+}, {
+    "id": "33",
+    "name": "Basic Medicines"
+}, {
+    "id": "34",
+    "name": "Combat Stabilisers"
+}, {
+    "id": "35",
+    "name": "Performance Enhancers"
 }, {
     "id": "36",
     "name": "Progenitor Cells"
 }, {
-    "id": "112",
-    "name": "Pyrophyllite"
+    "id": "37",
+    "name": "Aluminium"
 }, {
-    "id": "162",
-    "name": "Radiation Baffle"
+    "id": "38",
+    "name": "Beryllium"
 }, {
-    "id": "80",
-    "name": "Reactive Armour"
+    "id": "39",
+    "name": "Cobalt"
 }, {
-    "id": "163",
-    "name": "Reinforced Mounting Plate"
+    "id": "40",
+    "name": "Copper"
+}, {
+    "id": "41",
+    "name": "Gallium"
+}, {
+    "id": "42",
+    "name": "Gold"
+}, {
+    "id": "43",
+    "name": "Indium"
+}, {
+    "id": "44",
+    "name": "Lithium"
+}, {
+    "id": "45",
+    "name": "Palladium"
+}, {
+    "id": "46",
+    "name": "Silver"
+}, {
+    "id": "47",
+    "name": "Tantalum"
+}, {
+    "id": "48",
+    "name": "Titanium"
+}, {
+    "id": "49",
+    "name": "Imperial Slaves"
+}, {
+    "id": "50",
+    "name": "Uranium"
+}, {
+    "id": "51",
+    "name": "Bauxite"
+}, {
+    "id": "52",
+    "name": "Bertrandite"
+}, {
+    "id": "53",
+    "name": "Slaves"
+}, {
+    "id": "54",
+    "name": "Toxic Waste"
+}, {
+    "id": "55",
+    "name": "Coltan"
+}, {
+    "id": "56",
+    "name": "Gallite"
+}, {
+    "id": "57",
+    "name": "Indite"
+}, {
+    "id": "58",
+    "name": "Lepidolite"
+}, {
+    "id": "59",
+    "name": "Rutile"
+}, {
+    "id": "60",
+    "name": "Uraninite"
+}, {
+    "id": "61",
+    "name": "Advanced Catalysers"
+}, {
+    "id": "62",
+    "name": "Animal Monitors"
+}, {
+    "id": "63",
+    "name": "Aquaponic Systems"
+}, {
+    "id": "65",
+    "name": "Auto-Fabricators"
+}, {
+    "id": "66",
+    "name": "Bioreducing Lichen"
+}, {
+    "id": "67",
+    "name": "Computer Components"
+}, {
+    "id": "68",
+    "name": "H.E. Suits"
 }, {
     "id": "69",
     "name": "Resonating Separators"
@@ -363,92 +208,245 @@ var common = [{
     "id": "70",
     "name": "Robotics"
 }, {
-    "id": "59",
-    "name": "Rutile"
+    "id": "71",
+    "name": "Land Enrichment Systems"
 }, {
-    "id": "142",
-    "name": "Samarium"
+    "id": "72",
+    "name": "Osmium"
 }, {
-    "id": "77",
-    "name": "Scrap"
+    "id": "73",
+    "name": "Leather"
 }, {
-    "id": "28",
-    "name": "Semiconductors"
-}, {
-    "id": "46",
-    "name": "Silver"
-}, {
-    "id": "104",
-    "name": "Skimmer Components"
-}, {
-    "id": "53",
-    "name": "Slaves"
-}, {
-    "id": "117",
-    "name": "Structural Regulators"
-}, {
-    "id": "27",
-    "name": "Superconductors"
-}, {
-    "id": "97",
-    "name": "Surface Stabilisers"
-}, {
-    "id": "164",
-    "name": "Survival Equipment"
+    "id": "74",
+    "name": "Natural Fabrics"
 }, {
     "id": "75",
     "name": "Synthetic Fabrics"
 }, {
-    "id": "23",
-    "name": "Synthetic Meat"
+    "id": "76",
+    "name": "Biowaste"
 }, {
-    "id": "98",
-    "name": "Synthetic Reagents"
+    "id": "77",
+    "name": "Scrap"
 }, {
-    "id": "120",
-    "name": "Taaffeite"
+    "id": "78",
+    "name": "Non-Lethal Weapons"
 }, {
-    "id": "47",
-    "name": "Tantalum"
+    "id": "79",
+    "name": "Personal Weapons"
 }, {
-    "id": "22",
-    "name": "Tea"
+    "id": "80",
+    "name": "Reactive Armour"
 }, {
-    "id": "184",
-    "name": "Telemetry Suite"
-}, {
-    "id": "108",
-    "name": "Thallium"
-}, {
-    "id": "105",
-    "name": "Thermal Cooling Units"
-}, {
-    "id": "109",
-    "name": "Thorium"
-}, {
-    "id": "48",
-    "name": "Titanium"
-}, {
-    "id": "13",
-    "name": "Tobacco"
-}, {
-    "id": "54",
-    "name": "Toxic Waste"
-}, {
-    "id": "60",
-    "name": "Uraninite"
-}, {
-    "id": "50",
-    "name": "Uranium"
-}, {
-    "id": "139",
-    "name": "Water"
+    "id": "81",
+    "name": "Platinum"
 }, {
     "id": "82",
     "name": "Water Purifiers"
 }, {
-    "id": "14",
-    "name": "Wine"
+    "id": "83",
+    "name": "Power Generators"
+}, {
+    "id": "84",
+    "name": "Painite"
+}, {
+    "id": "85",
+    "name": "Microbial Furnaces"
+}, {
+    "id": "86",
+    "name": "Marine Equipment"
+}, {
+    "id": "87",
+    "name": "Atmospheric Processors"
+}, {
+    "id": "88",
+    "name": "Battle Weapons"
+}, {
+    "id": "95",
+    "name": "Bootleg Liquor"
+}, {
+    "id": "96",
+    "name": "Nerve Agents"
+}, {
+    "id": "97",
+    "name": "Surface Stabilisers"
+}, {
+    "id": "98",
+    "name": "Synthetic Reagents"
+}, {
+    "id": "99",
+    "name": "Evacuation Shelter"
+}, {
+    "id": "100",
+    "name": "Ceramic Composites"
+}, {
+    "id": "101",
+    "name": "Meta-Alloys"
+}, {
+    "id": "102",
+    "name": "Building Fabricators"
+}, {
+    "id": "103",
+    "name": "Geological Equipment"
+}, {
+    "id": "104",
+    "name": "Skimmer Components"
+}, {
+    "id": "105",
+    "name": "Thermal Cooling Units"
+}, {
+    "id": "106",
+    "name": "Bismuth"
+}, {
+    "id": "107",
+    "name": "Lanthanum"
+}, {
+    "id": "108",
+    "name": "Thallium"
+}, {
+    "id": "109",
+    "name": "Thorium"
+}, {
+    "id": "110",
+    "name": "Cryolite"
+}, {
+    "id": "111",
+    "name": "Goslarite"
+}, {
+    "id": "112",
+    "name": "Pyrophyllite"
+}, {
+    "id": "116",
+    "name": "Moissanite"
+}, {
+    "id": "117",
+    "name": "Structural Regulators"
+}, {
+    "id": "118",
+    "name": "Landmines"
+}, {
+    "id": "119",
+    "name": "Muon Imager"
+}, {
+    "id": "120",
+    "name": "Taaffeite"
+}, {
+    "id": "124",
+    "name": "Hafnium 178"
+}, {
+    "id": "137",
+    "name": "Liquid Oxygen"
+}, {
+    "id": "138",
+    "name": "Hydrogen Peroxide"
+}, {
+    "id": "139",
+    "name": "Water"
+}, {
+    "id": "140",
+    "name": "CMM Composite"
+}, {
+    "id": "141",
+    "name": "Insulating Membrane"
+}, {
+    "id": "142",
+    "name": "Samarium"
+}, {
+    "id": "143",
+    "name": "Praseodymium"
+}, {
+    "id": "144",
+    "name": "Low Temperature Diamonds"
+}, {
+    "id": "145",
+    "name": "Methane Clathrate"
+}, {
+    "id": "146",
+    "name": "Methanol Monohydrate Crystals"
+}, {
+    "id": "147",
+    "name": "Lithium Hydroxide"
+}, {
+    "id": "148",
+    "name": "Bromellite"
+}, {
+    "id": "149",
+    "name": "Energy Grid Assembly"
+}, {
+    "id": "150",
+    "name": "HN Shock Mount"
+}, {
+    "id": "151",
+    "name": "Heatsink Interlink"
+}, {
+    "id": "152",
+    "name": "Magnetic Emitter Coil"
+}, {
+    "id": "153",
+    "name": "Power Converter"
+}, {
+    "id": "154",
+    "name": "Medical Diagnostic Equipment"
+}, {
+    "id": "155",
+    "name": "Hardware Diagnostic Sensor"
+}, {
+    "id": "156",
+    "name": "Micro Controllers"
+}, {
+    "id": "157",
+    "name": "Military Grade Fabrics"
+}, {
+    "id": "158",
+    "name": "Emergency Power Cells"
+}, {
+    "id": "159",
+    "name": "Exhaust Manifold"
+}, {
+    "id": "160",
+    "name": "Ion Distributor"
+}, {
+    "id": "161",
+    "name": "Power Transfer Bus"
+}, {
+    "id": "162",
+    "name": "Radiation Baffle"
+}, {
+    "id": "163",
+    "name": "Reinforced Mounting Plate"
+}, {
+    "id": "164",
+    "name": "Survival Equipment"
+}, {
+    "id": "165",
+    "name": "Conductive Fabrics"
+}, {
+    "id": "166",
+    "name": "Advanced Medicines"
+}, {
+    "id": "167",
+    "name": "Nanobreakers"
+}, {
+    "id": "168",
+    "name": "Jadeite"
+}, {
+    "id": "181",
+    "name": "Modular Terminals"
+}, {
+    "id": "182",
+    "name": "Articulation Motors"
+}, {
+    "id": "183",
+    "name": "Neofabric Insulation"
+}, {
+    "id": "184",
+    "name": "Telemetry Suite"
+}, {
+    "id": "185",
+    "name": "Micro-Weave Cooling Hoses"
+}, {
+    "id": "10233",
+    "name": "Platinum Alloy"
 }];
 var parsing = 0;
 var wing = [
