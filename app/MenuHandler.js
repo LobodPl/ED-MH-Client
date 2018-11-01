@@ -26,6 +26,9 @@ ipc.on('update-reply', function (event, arg) {
   ipc.on('wing-reply', function (event, arg) {
     $(arg[0])[0].src="./app/icon_"+arg[1]+"_"+arg[2]+".svg";
   })
+  ipc.on('wing-name', function (event, arg) {
+    $(arg[0])[0].title=arg[1];
+  })
   ipc.on('wing-status', function (event, arg) {
       if(arg[1]=="on")$(arg[0])[0].style.display="inline";
       else $(arg[0])[0].style.display="none";
