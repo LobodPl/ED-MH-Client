@@ -12,6 +12,8 @@ var mdata = {};
 var fcache = 0;
 var FilePath = 'C:\\Users\\' + os.userInfo().username + '\\Saved Games\\Frontier Developments\\Elite Dangerous';
 var lastlocal = ["-", "Deep Space"];
+var tempdb=[];
+var prepdata = [];
 var common = [{
     "id": "1",
     "name": "Agri-Medicines"
@@ -553,6 +555,8 @@ function parser(data, inl = 0) {
         //console.log("Porzucona: "+data.MissionID);
     } else if (data.event == "Docked") {
         lastlocal = [data.StarSystem, data.StationName];
+    } else if (data.event=="Undocked"){
+        loaddata(tempdb);
     } else if (data.event == "FSDJump") {
         lastlocal = [data.StarSystem, ""];
     } else if (data.event == "WingJoin") {
@@ -561,6 +565,7 @@ function parser(data, inl = 0) {
         if (wing[1].indexOf(data.Name) == -1) wing[1].push(data.Name);
         if (inl > 0) {
             checkWing(wing[1])
+            if (prepdata.length > 1) socket.emit("Wing-Mission-prop", prepdata);
         };
     } else if (data.event == "Shutdown" || data.event == "WingLeave") {
         wing = [
@@ -611,8 +616,8 @@ function checkfile() {
     if (getLinesCount() != fcache) {
         fs.readFile(fn, (e, data) => {
             data2 = data.toString('utf8').split("\r\n");
-            for (var i = 1; i < data2.length - 1; i++) {
-                if (i >= fcache - 1) parser(JSON.parse(data2[i]), 1);
+            for (var i = fcache - 2; i < data2.length - 1; i++) {
+                parser(JSON.parse(data2[i]), 1);
             }
             fcache = getLinesCount();
         })
@@ -627,8 +632,13 @@ function updateList(p) {
         this.count = 0;
     }
     if (p == 1) {
-        var prepdata = [wing[1]];
+        prepdata=[wing[1]];
         for (var i = 0; i < mdata.mission.length; i++) {
+            if (mdata.mission[i].Wing == true) {
+                prepdata.push(mdata.mission[i]);
+            } else if (wing[1].length == 0 && mdata.mission[i].received) {
+                mdata.mission.splice(i, 1);
+            }
             if (db.findIndex(x => x.name == mdata.mission[i].name) != -1) {
                 index = db.findIndex(x => x.name == mdata.mission[i].name);
                 db[index].count += mdata.mission[i].count - mdata.mission[i].delivered;
@@ -638,14 +648,9 @@ function updateList(p) {
                 newitem.count = mdata.mission[i].count - mdata.mission[i].delivered;
                 db.push(newitem);
             }
-            if (mdata.mission[i].Wing == true) {
-                prepdata.push(mdata.mission[i]);
-            } else if (wing[1].length > 0 && mdata.mission[i].received) {
-                mdata.mission.splice(i, 1);
-            }
         }
         if (prepdata.length > 1 && wing[1].length > 0) socket.emit("Wing-Mission-prop", prepdata);
-        loaddata(db)
+        tempdb = db;
         var init = setInterval(() => {
             win.webContents.send("update-reply", JSON.stringify(db));
             ipc.once("test", function (event, data) {
@@ -752,7 +757,7 @@ function preparews() {
                     acc++;
                 }
             }
-            if (acc > 0 && wing[1].length > 0) updateList(1);
+            if (acc > 0 && wing[1].length > 0) {updateList(1);loaddata(tempdb);}
         }
     });
 }
