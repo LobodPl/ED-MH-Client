@@ -671,7 +671,7 @@ function updateList(p) {
             ipc.once("test", function (event, data) {
                 clearInterval(init);
             });
-        }, 100);
+        }, 200);
     }
 }
 ipc.on('lb', function (event, data) {
