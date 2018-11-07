@@ -10,10 +10,19 @@ var ipc = require('electron').ipcMain;
 var fn = "";
 var mdata = {};
 var fcache = 0;
-var FilePath = 'C:\\Users\\' + os.userInfo().username + '\\Saved Games\\Frontier Developments\\Elite Dangerous';
-var lastlocal = ["-", "Deep Space"];
-var tempdb=[];
 var prepdata = [];
+var exec = require('child_process').execFile;
+var FilePath = 'C:\\Users\\' + os.userInfo().username + '\\Saved Games\\Frontier Developments\\Elite Dangerous';
+if(os.arch() == "x64")
+    var pat = "C:\\Program Files (x86)\\EDMarketConnector\\EDMarketConnector.exe";
+else var pat = "C:\\Program Files\\EDMarketConnector\\EDMarketConnector.exe";
+fs.exists(pat,()=>{
+    exec(pat, function(err, data) {                    
+    }); 
+})
+var receviedFromOthers=[];
+var reqLP = "M";
+var lastlocal = ["-", "Deep Space"];
 var common = [{
     "id": "1",
     "name": "Agri-Medicines"
@@ -456,6 +465,7 @@ var wing = [
     []
 ];
 var name = "";
+var tempdb = [];
 
 function Mission1() {
     this.name = "";
@@ -490,6 +500,7 @@ function createWindow() {
         parsing++;
         if (flist.length == parsing) {
             updateList(1);
+            loaddata(tempdb);
         }
     }
     setInterval(() => {
@@ -538,7 +549,6 @@ function parser(data, inl = 0) {
         mission.Wing = data.Wing;
         mdata.mission.push(mission);
         updateList(inl);
-        //console.log("Dodana: "+data.MissionID);
     } else if (data.event == "CargoDepot" && mdata.mission.findIndex(x => x.id == data.MissionID) != -1 && (data.UpdateType == "Deliver" || data.UpdateType == "WingUpdate")) {
         index = mdata.mission.findIndex(x => x.id == data.MissionID);
         if (index > -1) mdata.mission[index].delivered = data.ItemsDelivered;
@@ -546,26 +556,31 @@ function parser(data, inl = 0) {
     } else if (data.event == "MissionCompleted" && mdata.mission.findIndex(x => x.id == data.MissionID) != -1) {
         index = mdata.mission.findIndex(x => x.id == data.MissionID);
         mdata.mission.removeItem(index);
-        //console.log("Ukończona: "+data.MissionID);
         updateList(inl);
     } else if ((data.event == "MissionAbandoned" || data.event == "MissionFailed") && mdata.mission.findIndex(x => x.id == data.MissionID) != -1) {
         index = mdata.mission.findIndex(x => x.id == data.MissionID);
         mdata.mission.removeItem(index);
         updateList(inl);
-        //console.log("Porzucona: "+data.MissionID);
     } else if (data.event == "Docked") {
         lastlocal = [data.StarSystem, data.StationName];
-    } else if (data.event=="Undocked"){
+    } else if (data.event == "Undocked") {
         loaddata(tempdb);
     } else if (data.event == "FSDJump") {
         lastlocal = [data.StarSystem, ""];
     } else if (data.event == "WingJoin") {
         wing[1] = data.Others;
+    } else if (data.event == "Loadout"){
+        if(["DIAMONDBACKXL","COBRAMKIII","EMPIRE_EAGLE","VULTURE","VIPER_MKIV","VIPER","SIDEWINDER","ADDER","DOLPHIN","HAULER","EAGLE","EMPIRE_COURIER","DIAMONDBACK","COBRAMKIV"].indexOf(data.Ship.toUpperCase())!=-1) reqLP = "S";
+        else if(["PYTHON","ASP","FERDELANCE","ASP_SCOUT","TYPEX_3","TYPEX","TYPEX_2","FEDERATION_DROPSHIP_MKII","FEDERATION_DROPSHIP","FEDERATION_GUNSHIP","INDEPENDANT_TRADER","KRAIT_MKII","TYPE6"].indexOf(data.Ship.toUpperCase())!=-1) reqLP = "M";
+        else if(["ANACONDA","CUTTER","FEDERATION_CORVETTE","BELUGALINER","ORCA","EMPIRE_TRADER","TYPE9_MILITARY","TYPE7","TYPE9"].indexOf(data.Ship.toUpperCase()!=-1)) reqLP = "L";
+    } else if (data.event =="WingLeave"){
+        wing[1] = [];
+        updateList(inl);
     } else if (data.event == "WingAdd") {
         if (wing[1].indexOf(data.Name) == -1) wing[1].push(data.Name);
         if (inl > 0) {
             checkWing(wing[1])
-            if (prepdata.length > 1) socket.emit("Wing-Mission-prop", prepdata);
+            if (prepdata.length > 1 && wing[1].length > 0) socket.emit("Wing-Mission-prop", prepdata);
         };
     } else if (data.event == "Shutdown" || data.event == "WingLeave") {
         wing = [
@@ -616,8 +631,8 @@ function checkfile() {
     if (getLinesCount() != fcache) {
         fs.readFile(fn, (e, data) => {
             data2 = data.toString('utf8').split("\r\n");
-            for (var i = fcache - 2; i < data2.length - 1; i++) {
-                parser(JSON.parse(data2[i]), 1);
+            for (var i = 1; i < data2.length - 1; i++) {
+                if (i >= fcache - 1) parser(JSON.parse(data2[i]), 1);
             }
             fcache = getLinesCount();
         })
@@ -632,13 +647,8 @@ function updateList(p) {
         this.count = 0;
     }
     if (p == 1) {
-        prepdata=[wing[1]];
+        prepdata = [wing[1]];
         for (var i = 0; i < mdata.mission.length; i++) {
-            if (mdata.mission[i].Wing == true) {
-                prepdata.push(mdata.mission[i]);
-            } else if (wing[1].length == 0 && mdata.mission[i].received) {
-                mdata.mission.splice(i, 1);
-            }
             if (db.findIndex(x => x.name == mdata.mission[i].name) != -1) {
                 index = db.findIndex(x => x.name == mdata.mission[i].name);
                 db[index].count += mdata.mission[i].count - mdata.mission[i].delivered;
@@ -647,6 +657,11 @@ function updateList(p) {
                 newitem.name = mdata.mission[i].name;
                 newitem.count = mdata.mission[i].count - mdata.mission[i].delivered;
                 db.push(newitem);
+            }
+            if (mdata.mission[i].Wing == true) {
+                prepdata.push(mdata.mission[i]);
+            } else if (wing[1].length > 0 && mdata.mission[i].received) {
+                mdata.mission.splice(i, 1);
             }
         }
         if (prepdata.length > 1 && wing[1].length > 0) socket.emit("Wing-Mission-prop", prepdata);
@@ -688,7 +703,7 @@ function call(db, i = 0) {
         function (err, httpResponse, body) {
             var $ = cheerio.load(body);
             for (var t = 2; t < $("td.alignright").length; t += 5) {
-                if ($("td.alignright").eq(t).text().replaceAll(",", "") >= ilosc) {
+                if ($("td.alignright").eq(t).text().replaceAll(",", "") >= ilosc && shipChecker($("td.minor").not(".alignright").eq((t + 3) / 5 - 1).text())) {
                     var index = (t + 3) / 5 - 1;
                     var text = $("span.uppercase.avoidwrap").eq(index).text() + " -> " + $("span.normal.avoidwrap").eq(index).text() + " (" + String(Number($("td.alignright").eq(t + 1).text().replaceAll(",", "").replace("Cr", "")) * Number(db[i].count)).split(/(?=(?:...)*$)/).join(",") + "Cr)";
                     break;
@@ -710,21 +725,26 @@ String.prototype.replaceAll = function (search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
 };
-
+function shipChecker(Lp){
+    if (Lp=="S" && (reqLP=="S")) return true;
+    else if (Lp=="M" && (reqLP=="S" || reqLP=="M")) return true;
+    else if (Lp=="L" && (reqLP=="S" || reqLP=="M" || reqLP=="L")) return true;
+    else return false;
+}
 function checkWing(wingdata) {
     if (wingdata.length >= 1) {
         win.webContents.send("wing-status", ["#wing1", "on"]);
-        win.webContents.send("wing-name", ["#wing1", wingdata[0].name]);
+        win.webContents.send("wing-name", ["#wing1", wingdata[0]]);
         win.webContents.send("wing-reply", ["#wing1", 2, "off"]);
     }
     if (wingdata.length >= 2) {
         win.webContents.send("wing-status", ["#wing2", "on"]);
-        win.webContents.send("wing-name", ["#wing2", wingdata[1].name]);
+        win.webContents.send("wing-name", ["#wing2", wingdata[1]]);
         win.webContents.send("wing-reply", ["#wing2", 3, "off"]);
     }
     if (wingdata.length >= 3) {
         win.webContents.send("wing-status", ["#wing3", "on"]);
-        win.webContents.send("wing-name", ["#wing3", wingdata[2].name]);
+        win.webContents.send("wing-name", ["#wing3", wingdata[2]]);
         win.webContents.send("wing-reply", ["#wing3", 4, "off"]);
     }
     socket.emit("check-wing", JSON.stringify(wingdata))
