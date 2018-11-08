@@ -562,6 +562,7 @@ function parser(data, inl = 0) {
         updateList(inl);
     } else if ((data.event == "MissionAbandoned" || data.event == "MissionFailed") && mdata.mission.findIndex(x => x.id == data.MissionID) != -1) {
         index = mdata.mission.findIndex(x => x.id == data.MissionID);
+        if (mdata.mission[index].Wing == true) socket.emit("Mission-Abandoned",[wing[1],MissionID]);
         mdata.mission.removeItem(index);
         updateList(inl);
     } else if (data.event == "Docked") {
@@ -599,7 +600,7 @@ function parser(data, inl = 0) {
             win.webContents.send("wing-status", ["#wing3", "off"]);
         }
         updateList(inl);
-    } else if (data.event == "Commander" && name == "") {
+    } else if ((data.event == "Commander"|| data.event =="NewCommander") && name == "") {
         var timer;
         wing = [
             [0, 0, 0],
@@ -665,7 +666,7 @@ function updateList(p) {
                 newitem.count = mdata.mission[i].count - mdata.mission[i].delivered;
                 db.push(newitem);
             }
-            if (mdata.mission[i].Wing == true) {
+            if (mdata.mission[i].Wing && !mdata.mission[i].received) {
                 prepdata.push(mdata.mission[i]);
             } else if (wing[1].length > 0 && mdata.mission[i].received) {
                 mdata.mission.splice(i, 1);
@@ -766,6 +767,7 @@ function preparews() {
                 wing[0][index] = 1;
                 win.webContents.send("wing-status", ["#wing" + Number(index + 1), "on"]);
                 win.webContents.send("wing-reply", ["#wing" + Number(index + 1), index + 2, "on"]);
+                if (prepdata.length > 1 && wing[1].length > 0) socket.emit("Wing-Mission-prop", prepdata);
             } else if (data.status == "Offline") {
                 console.log("Wingmate offline: " + data.name);
                 wing[0][index] = 0;
@@ -785,6 +787,15 @@ function preparews() {
                 }
             }
             if (acc > 0 && wing[1].length > 0) {updateList(1);loaddata(tempdb);}
+        }
+    });
+    socket.on("Wing-Mission-Abandoned",(data)=>{
+        if (data[0].indexOf(name) != -1) {
+            index = mdata.mission.findIndex(x => x.id == data[1]);
+            if(index!=-1){
+                mdata.mission.removeItem(index);
+                updateList(inl);
+            }
         }
     });
 }
