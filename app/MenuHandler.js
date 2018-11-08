@@ -50,3 +50,6 @@ function update(arg){
 
     $('.card-title')[0].innerHTML = html;
 }
+$(document).ready(()=>{
+    ipc.send("ready!","");
+});

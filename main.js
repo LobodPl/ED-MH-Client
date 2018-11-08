@@ -10,6 +10,7 @@ var ipc = require('electron').ipcMain;
 var fn = "";
 var mdata = {};
 var fcache = 0;
+var connected = 0;
 var prepdata = [];
 var exec = require('child_process').execFile;
 var FilePath = 'C:\\Users\\' + os.userInfo().username + '\\Saved Games\\Frontier Developments\\Elite Dangerous';
@@ -503,9 +504,11 @@ function createWindow() {
             loaddata(tempdb);
         }
     }
-    setInterval(() => {
-        checkfile();
-    }, 1000)
+    win.webContents.once('dom-ready', () => {
+        setInterval(() => {
+            checkfile();
+        }, 1000)
+    });
 }
 
 app.on('ready', createWindow)
@@ -597,6 +600,7 @@ function parser(data, inl = 0) {
         }
         updateList(inl);
     } else if (data.event == "Commander" && name == "") {
+        var timer;
         wing = [
             [0, 0, 0],
             []
@@ -608,11 +612,14 @@ function parser(data, inl = 0) {
             win.webContents.send("wing-name", ["#wingyou", name]);
         });
         socket.on("Auth-succ", (data) => {
-            win.webContents.send("wing-reply", ["#wingyou", 1, "on"]);
+           timer = setInterval(() => {
+                win.webContents.send("wing-reply", ["#wingyou", 1, "on"]);
+            }, 1000);
             preparews();
             checkWing(wing[1]);
         })
         socket.on("disconnect", () => {
+            clearInterval(timer);
             win.webContents.send("wing-reply", ["#wingyou", 1, "off"]);
             win.webContents.send("wing-reply", ["#wing1", 2, "off"]);
             win.webContents.send("wing-status", ["#wing1", "off"]);
