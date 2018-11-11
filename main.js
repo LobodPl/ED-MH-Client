@@ -562,7 +562,7 @@ function parser(data, inl = 0) {
         updateList(inl);
     } else if ((data.event == "MissionAbandoned" || data.event == "MissionFailed") && mdata.mission.findIndex(x => x.id == data.MissionID) != -1) {
         index = mdata.mission.findIndex(x => x.id == data.MissionID);
-        if (mdata.mission[index].Wing == true) socket.emit("Mission-Abandoned",[wing[1],MissionID]);
+        if (mdata.mission[index].Wing == true) socket.emit("Mission-Abandoned",[wing[1],data.MissionID]);
         mdata.mission.removeItem(index);
         updateList(inl);
     } else if (data.event == "Docked") {
@@ -710,10 +710,11 @@ function call(db, i = 0) {
         },
         function (err, httpResponse, body) {
             var $ = cheerio.load(body);
-            for (var t = 2; t < $("td.alignright").length; t += 5) {
-                if ($("td.alignright").eq(t).text().replaceAll(",", "") >= ilosc && shipChecker($("td.minor").not(".alignright").eq((t + 3) / 5 - 1).text())) {
+            var table = $("#commodityslotbuy");
+            for (var t = 2; t < $("td.alignright",table).length; t += 5) {
+                if ($("td.alignright", table).eq(t).text().replaceAll(",", "") >= ilosc && shipChecker($("td.minor",table).not(".alignright").eq((t + 3) / 5 - 1).text())) {
                     var index = (t + 3) / 5 - 1;
-                    var text = $("span.uppercase.avoidwrap").eq(index).text() + " -> " + $("span.normal.avoidwrap").eq(index).text() + " (" + String(Number($("td.alignright").eq(t + 1).text().replaceAll(",", "").replace("Cr", "")) * Number(db[i].count)).split(/(?=(?:...)*$)/).join(",") + "Cr)";
+                    var text = $("span.uppercase.avoidwrap",table).eq(index).text() + " -> " + $("span.normal.avoidwrap",table).eq(index).text() + " (" + String(Number($("td.alignright",table).eq(t + 1).text().replaceAll(",", "").replace("Cr", "")) * Number(db[i].count)).split(/(?=(?:...)*$)/).join(",") + "Cr)";
                     break;
                 } else {
                     var text = "E:404";

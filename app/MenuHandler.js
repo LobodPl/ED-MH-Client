@@ -42,7 +42,7 @@ function update(arg){
     list = JSON.parse(arg);
     if (list.length>0){
         for(var i =0;i<list.length;i++){
-            elements+=`<p>${list[i].name} : ${list[i].count}</p><p class="location" style="font-size:45%;">Loading...</p>`
+            elements+=`<p>${list[i].name} : ${list[i].count}</p><p class="location" style="font-size:65%;">Loading...</p>`
         }
         var html=`<b>${elements}</b>`;
     }
