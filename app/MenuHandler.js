@@ -3,18 +3,17 @@ const { remote } =require("electron");
 var ipc = require("electron").ipcRenderer;
 var win = remote.getCurrentWindow();
 function update(arg){
-    var html = "";
-    var elements = ""
-    list = JSON.parse(arg);
+    var elements = "";
+    var list = JSON.parse(arg);
     if (list.length>0){
         for(var i =0;i<list.length;i++){
-            elements+=`<p>${list[i].name} : ${list[i].count}</p><p class="location" style="font-size:65%;">Loading...</p>`
+            elements+=`<p>${list[i].name} : ${list[i].count}</p><p class="location" style="font-size:65%;">Loading...</p>`;
         }
-        var html=`<b>${elements}</b>`;
+        var dane=`<b>${elements}</b>`;
     }
-    else var html=`<b>No data to display</b>`;
+    else var dane=`<b>No data to display</b>`;
 
-    $(".card-title")[0].html(html);
+    $(".card-title")[0].html(dane);
 }
 $("#close").click(function(){
     win.close();
@@ -44,7 +43,9 @@ ipc.on("update-reply", function (event, arg) {
     $(arg[0])[0].title=arg[1];
   })
   ipc.on("wing-status", function (event, arg) {
-      if(arg[1]=="on")$(arg[0])[0].style.display="inline";
+        if(arg[1]==="on"){
+            $(arg[0])[0].style.display="inline";
+        }
       else $(arg[0])[0].style.display="none";
   })
   ipc.on("pos-reply", function (event, arg) {
