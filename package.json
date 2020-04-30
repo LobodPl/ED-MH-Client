@@ -13,7 +13,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "electron": "^3.0.10",
-    "jquery": ">=3.4.0",
+    "jquery": ">=3.5.0",
     "request": "^2.88.0",
     "socket.io": "^2.1.1"
   },
