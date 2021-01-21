@@ -15,7 +15,7 @@
     "electron": "^3.0.10",
     "jquery": ">=3.4.0",
     "request": "^2.88.0",
-    "socket.io": "^2.1.1"
+    "socket.io": "^2.4.0"
   },
   "build": {
     "appId": "dev.Lobod.id",
